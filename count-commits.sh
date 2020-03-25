@@ -5,28 +5,28 @@
 # instead of danie-stafford: number of commits.
 
 # allow me to loop though the git log via comma delinator
-OLDIFS=$IFS
-
-IFS=","
 
 #provide instructor when users adds -h parameter
-if [ "$1" == "-h" ]; then
-  echo "Usage: $(basename $0) If you run this script without arguments, output will be a
-  list of author names along with their number of commits.  If names of authors are provided
-  as arugments (write at least 3 characters per user name, which are case insensitive) output will
-  be only commits from those authors."
-  exit 0
+if [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
+  cat <<EOF
+Usage: $0 [options] | [authors]
+
+DESCRIPTION
+This script prints out names of committers along with number of commits
+
+OPTIONS
+-h | --help        Print out usage
+authors            List of author names separated by a space
+EOF
 fi
 
 # get commit author from git log
-gitlog=$(git log --pretty="%an,")
+gitlog=$(git log --pretty="%an")
 
 # if no arguments, loop through git log, sort/count commits per user, format output as user - # of commits
 # Note: that awk word reversal came from stack overrflow, working on understanding it...
 if [ "$#" -eq 0 ]; then
-  for user in "${gitlog[@]}"; do
-    echo "$user"
-  done | sort | uniq -c | sort -nr | awk '{s=$1;$1=$NF;$NF=s}1' | sed 's/,/ -/g'
+  git --no-pager log --pretty=":%an" | sort | uniq -c | sort -nr | awk -F: '{sub(/[ ]*/,"",$1);print $NF" - "$1}'
 fi
 
 # function for looping with user arugments
@@ -51,6 +51,5 @@ for userArg in "$@"; do
 done
 
 # restore old IFS to avoid messing up my computer!
-IFS=$OLDIFS
 
 exit 0
