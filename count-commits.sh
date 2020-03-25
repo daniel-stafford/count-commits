@@ -33,7 +33,7 @@ fi
 function loop_gitLog() {
   for user in "${gitlog[@]}"; do
     echo "$user"
-  done | grep -ic $1
+  done | grep -ic "$1"
   return 0
 }
 
@@ -45,7 +45,7 @@ for userArg in "$@"; do
     echo 'Please provide user names with at least 3 characters'
     exit 1
   else
-    result=$(loop_gitLog $userArg)
+    result=$(loop_gitLog "$userArg")
     echo "$userArg - $result"
   fi
 done
