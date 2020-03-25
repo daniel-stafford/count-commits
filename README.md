@@ -1,0 +1,1 @@
+![](demo-count-commits.gif)
