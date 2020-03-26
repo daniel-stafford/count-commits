@@ -8,7 +8,7 @@
 
 #provide instructor when users adds -h parameter
 if [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
-  cat <<EOF
+  less <<EOF
 Usage: $0 [options] | [authors]
 
 DESCRIPTION
@@ -18,6 +18,7 @@ OPTIONS
 -h | --help        Print out usage
 authors            List of author names separated by a space
 EOF
+  exit 0
 fi
 
 # get commit author from git log
@@ -26,7 +27,7 @@ gitlog=$(git log --pretty="%an")
 # if no arguments, loop through git log, sort/count commits per user, format output as user - # of commits
 # Note: that awk word reversal came from stack overrflow, working on understanding it...
 if [ "$#" -eq 0 ]; then
-  git --no-pager log --pretty=":%an" | sort | uniq -c | sort -nr | awk -F: '{sub(/[ ]*/,"",$1);print $NF" - "$1}'
+  git --no-pager log --pretty=":%an" | sort | uniq -c | sort -nr | awk -F: '{sub(/[ ]*/,"",$1);print $NF" - "$1}' | less
 fi
 
 # function for looping with user arugments
@@ -47,9 +48,6 @@ for userArg in "$@"; do
   else
     result=$(loop_gitLog "$userArg")
     echo "$userArg - $result"
+    exit 0
   fi
 done
-
-# restore old IFS to avoid messing up my computer!
-
-exit 0
