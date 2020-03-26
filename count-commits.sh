@@ -1,12 +1,6 @@
 #!/bin/bash
 
-# script has basic functionality, though could still be improved.  Output could be improved when
-# user arguments are provided.  If the "count-commits.sh dan" is provided, output will be dan: number of commits,
-# instead of danie-stafford: number of commits.
-
-# allow me to loop though the git log via comma delinator
-
-#provide instructor when users adds -h parameter
+#provide instructor when users adds -h, or --help parameter
 if [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
   less <<EOF
 Usage: $0 [options] | [authors]
@@ -21,17 +15,17 @@ EOF
   exit 0
 fi
 
-# get commit author from git log
-gitlog=$(git log --pretty="%an")
-
 # if no arguments, loop through git log, sort/count commits per user, format output as user - # of commits
 # Note: that awk word reversal came from stack overrflow, working on understanding it...
 if [ "$#" -eq 0 ]; then
   git --no-pager log --pretty=":%an" | sort | uniq -c | sort -nr | awk -F: '{sub(/[ ]*/,"",$1);print $NF" - "$1}' | less
+  exit 0
 fi
 
 # function for looping with user arugments
 function loop_gitLog() {
+  # get commit author from git log
+  local gitlog=$(git --no-pager log --pretty="%an")
   for user in "${gitlog[@]}"; do
     echo "$user"
   done | grep -ic "$1"
